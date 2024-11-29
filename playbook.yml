@@ -1,0 +1,55 @@
+- name: "Server config"
+  hosts: "all"
+
+  tasks:
+    - name: "Change hostname"
+      ansible.builtin.hostname:
+        name: "nsapoold05"
+      become: true
+
+- name: "Create user marvin"
+  hosts: localhost
+  become: yes
+    
+  tasks:
+    - name: "create user"
+      ansible.builtin.user:
+        name: "marvin"
+        password: "$6$m22oV2sHHI00LXBA$wotX1H56grl/.XPjrtF44EqiMKcQ81n8DZGZn1SWi50A9cTNc0gIxMICcCbDk76.D6C8ol4Ch5kwC0K9l8gmH0"
+        home: "/home/marvin"
+        createhome: yes
+        state: present
+        shell: /bin/bash
+    
+- name: "Change the MOTD"
+  hosts: all
+  become: yes
+      
+  tasks:
+    - name: Add new MOTD
+      lineinfile:
+        path: /etc/motd
+        line: "Welcome to nsapoold05"
+        state: present
+      
+
+- name: Install packages
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update the APT package
+      apt:
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name:
+          - git
+          - htop
+          - curl
+          - sudo
+          - unzip
+          - python3
+          - python3-pip
+        state: present
